@@ -1,73 +1,66 @@
 export class QueueNode<T> {
-	value: T;
-	next?: QueueNode<T>;
-
-	constructor(value: T, next?: QueueNode<T>) {
-		this.value = value;
-		this.next = next;
-	}
+  next?: QueueNode<T>;
+  value?: T;
+  constructor(value?: T, next?: QueueNode<T>) {
+    this.value = value;
+    this.next = next;
+  }
 }
 
 export class Queue<T> {
-	public length: number;
-	private head?: QueueNode<T>;
-	private tail?: QueueNode<T>;
-	constructor() {
-		this.head = this.tail = undefined;
-		this.length = 0;
-	}
-	enqueue(item: T): void {
-		const node = new QueueNode(item);
-		this.length += 1;
+  private head?: QueueNode<T>;
+  private tail?: QueueNode<T>;
+  public length: number;
+  constructor() {
+    this.length = 0;
+  }
+  enqueue(item: T) {
+    this.length++;
+    const node = new QueueNode<T>(item);
 
-		if (!this.tail) {
-			this.tail = this.head = node;
-			return;
-		}
-		this.tail.next = node;
-		this.tail = node;
-	}
-	deque(): T | undefined {
-		if (!this.head) {
-			return;
-		}
+    if (!this.tail) {
+      this.head = this.tail = node;
+      return;
+    }
 
-		this.length -= 1;
+    this.tail.next = node;
+    this.tail = node;
+  }
+  dequeue(): T | undefined {
+    if (!this.head) {
+      return;
+    }
 
-		if (!this.head.next) {
-			this.head = this.tail = undefined;
-			return;
-		}
-		/*
-		Do not have to set to implicitly set node.next undefined
-		because nothing is pointing at it right now, except for node var
-		that will die at the end of this scope and the node object will 
-		be garbage collected.
-		*/
-		const node = this.head;
-		this.head = node.next;
-		node.next = undefined;
+    this.length--;
 
-		return node.value;
-	}
-	peek(): T | undefined {
-		return this.head?.value;
-	}
-	isEmpty(item: T): boolean {
-		let node = this.head;
-		for (let i = 0; i < this.length; ++i) {
-			if (node?.value === item) {
-				return true;
-			}
-			node = node?.next;
-		}
-		return false;
-	}
+    if (this.length === 0) {
+      const node = this.head;
+      this.head = this.tail = undefined;
+      return node.value;
+    }
+
+    const node = this.head;
+    this.head = node.next;
+    node.next = undefined;
+
+    return node.value;
+  }
+  peek() {
+    return this.head?.value;
+  }
+  isEmpty(): boolean {
+    return this.length === 0;
+  }
+  printQueue() {
+    if (!this.head) {
+      return;
+    }
+
+    let node: QueueNode<T> | undefined = this.head;
+
+    while (node) {
+      console.log(node.value);
+      node = node.next;
+    }
+  }
 }
-const target = 213;
-const queue = new Queue<number>();
-queue.enqueue(12313);
-queue.enqueue(target);
-queue.enqueue(45);
-
-console.log(queue.isEmpty(target));
